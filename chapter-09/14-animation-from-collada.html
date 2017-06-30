@@ -70,18 +70,20 @@
         var loader = new THREE.ColladaLoader();
         loader.load('../assets/models/monster.dae', function (collada) {
 
-            var child = collada.skins[0];
-            scene.add(child);
-
-
-            var animation = new THREE.Animation(child, child.geometry.animation);
-            animation.play();
-
+var geom = collada.skins[0].geometry;
+ var mat = collada.skins[0].material;
+ // create a smooth skin
+ geom.computeMorphNormals();
+ mat.morphNormals = true;
+ // create the animation
+ child = new THREE.MorphAnimMesh(geom, mat);
             // position the mesh
             child.scale.set(0.15, 0.15, 0.15);
             child.rotation.x = -0.5 * Math.PI;
             child.position.x = -100;
             child.position.y = -60;
+            scene.add(child);
+ child.duration = 5000
         });
 
 
@@ -93,9 +95,9 @@
 
 
             var delta = clock.getDelta();
-            THREE.AnimationHandler.update(delta);
-
-
+            if(child){
+          child.updateAnimation( delta *1000 );
+}
             // render using requestAnimationFrame
             requestAnimationFrame(render);
             webGLRenderer.render(scene, camera);
